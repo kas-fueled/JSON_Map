@@ -1,4 +1,5 @@
 package com.example.json_map;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,31 +10,32 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
-public class Adapter extends BaseAdapter{
-	
+
+public class Adapter extends BaseAdapter {
+
 	public static class ViewHolder {
 		TextView name;
-		TextView latitude;
-		TextView longitude;
 	}
-	private List<Details> data =  new ArrayList<Details>();
+
+	private List<EarthquakeLocation> earthquakeLocatiosList = new ArrayList<EarthquakeLocation>();
 	private LayoutInflater inflater;
 	RequestQueue requestQueue;
-	
+
 	public Adapter(Context context, RequestQueue requestQueue) {
-		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.requestQueue = requestQueue;
 	}
-	
-	public void setData(List<Details> data) {
-		this.data = data;
+
+	public void setData(List<EarthquakeLocation> earthquakeLocatiosList) {
+		this.earthquakeLocatiosList = earthquakeLocatiosList;
 	}
-	
-	private List<Details> getData() {
-		if(null == data) {
-			data = new ArrayList<Details>();			
+
+	private List<EarthquakeLocation> getData() {
+		if (null == earthquakeLocatiosList) {
+			earthquakeLocatiosList = new ArrayList<EarthquakeLocation>();
 		}
-		return data;
+		return earthquakeLocatiosList;
 	}
 
 	@Override
@@ -43,7 +45,7 @@ public class Adapter extends BaseAdapter{
 
 	@Override
 	public Object getItem(int position) {
-		 return getData().get(position);
+		return getData().get(position);
 	}
 
 	@Override
@@ -54,26 +56,21 @@ public class Adapter extends BaseAdapter{
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder viewHolder;
-		
-		if(null == convertView) {
-			convertView = inflater.inflate(R.layout.row, parent,false);
+
+		if (null == convertView) {
+			convertView = inflater.inflate(R.layout.row, parent, false);
 			viewHolder = new ViewHolder();
-			
+
 			viewHolder.name = (TextView) convertView.findViewById(R.id.name);
-			//viewHolder.latitude = (TextView) convertView.findViewById(R.id.latitude);
-			//viewHolder.longitude = (TextView) convertView.findViewById(R.id.longitude);
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
-		Details details = (Details) getItem(position);
+		EarthquakeLocation details = (EarthquakeLocation) getItem(position);
 		viewHolder.name.setText(details.getName() + "");
-		//viewHolder.latitude.setText(details.getLatitude() + "");
-		//viewHolder.longitude.setText(details.getLongitude() + "");
-		
+
 		return convertView;
-		
-		
+
 	}
 
 }
