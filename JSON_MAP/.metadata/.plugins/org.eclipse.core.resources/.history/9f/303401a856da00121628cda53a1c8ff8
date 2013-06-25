@@ -1,0 +1,17 @@
+package com.example.json_map;
+
+public class Details {
+	
+	private String latitude;
+	private String longitude;
+	private String name;
+	
+	
+	public String getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+}

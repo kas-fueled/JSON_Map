@@ -1,0 +1,174 @@
+package com.example.json_map;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.util.Log;
+import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.TextView;
+
+
+public class MainActivity extends Activity {
+private RequestQueue mRequestQueue;
+	
+	private Adapter adapter;
+	private ListView dataList;
+	JSONArray dataArray;
+	Details[] data1=new Details[dataArray.length()];
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+		adapter = new Adapter(this, mRequestQueue);
+		dataList = (ListView) findViewById(R.id.listView1);
+		dataList.setAdapter(adapter);
+		
+		
+		loadData();
+		
+		 dataList.setOnItemClickListener(new OnItemClickListener() {
+			   @Override
+			   public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
+				   
+				   String item = ((TextView)view).getText().toString();
+				   double lati;
+				   double longi;
+				 
+				   for(int i=0;i<dataArray.length();i++)
+				   {
+					   if(data1[0].getName()==item)
+					   {
+						   lati=data1[0].getLatitude();
+						   longi=data1[0].getLongitude();
+						   
+						  Intent intent=new Intent(this,MapActivity.class);
+						  intent.putExtra("Lati",lati);
+						  intent.putExtra("Longi",longi);
+						      startActivity(intent);
+					   }
+				   }
+			     
+			   } });
+	
+    }
+    
+
+
+    public void loadData() {
+		try {
+		executeRequest();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+    
+    private void executeRequest() throws UnsupportedEncodingException {
+	
+		String url = "http://earthquake.usgs.gov/earthquakes/feed/v0.1/summary/1.0_hour.geojson";
+
+		
+
+		JsonObjectRequest myReq = new JsonObjectRequest(Method.GET, 
+                url,
+                null,
+                createMyReqSuccessListener(),
+                (ErrorListener) createMyReqErrorListener());
+		mRequestQueue.add(myReq);
+    }
+
+    private Response.Listener<JSONObject> createMyReqSuccessListener() {
+        return new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+            	List<Details> details = new ArrayList<Details>();
+            	
+				try {
+					dataArray = response.getJSONArray("features");
+					for (int t = 0; t < dataArray.length(); t++) {
+						Details data = new Details();
+						
+						JSONObject feature = dataArray.getJSONObject(t);
+						String name = feature.getJSONObject("properties")
+								.getString("place");
+
+						JSONArray jsonArrayCoordinates = feature.getJSONObject(
+								"geometry").getJSONArray("coordinates");
+
+						double lati = (Double) jsonArrayCoordinates.get(0);
+						double longi = (Double) jsonArrayCoordinates.get(1);
+
+						data.setName(name);
+						data.setLatitude(lati);
+						data.setLongitude(longi);
+						
+						data1[t]=data;
+
+						details.add(data);
+						
+						
+
+					}
+					
+                	adapter.setData(details);
+                	adapter.notifyDataSetChanged();
+                	
+                	
+                } catch (JSONException e) { 
+                	
+                	e.printStackTrace();
+                }
+                
+            }
+
+			
+        };
+    }
+    
+    
+    private Response.ErrorListener createMyReqErrorListener() {
+        return new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            	
+             error.getMessage();
+            	
+            }
+        };
+    }
+    
+    
+   
+   
+
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    
+}

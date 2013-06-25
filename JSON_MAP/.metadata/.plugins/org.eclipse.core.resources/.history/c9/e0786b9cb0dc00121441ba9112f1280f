@@ -1,0 +1,53 @@
+package com.example.mapwithmarkers;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.MapFragment;
+
+import android.os.Bundle;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.view.Menu;
+
+@SuppressLint("NewApi")
+public class MainActivity extends Activity {
+	private GoogleMap mMap;
+	static final LatLng MELBOURNE = new LatLng(-37.81319, 144.96298);
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.activity_main);
+		mMap = ((MapFragment)getFragmentManager().findFragmentById(R.id.map)).getMap();
+		
+		Marker melbourne = mMap.addMarker(new MarkerOptions()
+        .position(MELBOURNE)
+        .title("melbourne......")
+        .snippet("Population: 4,137,400")
+       .icon(BitmapDescriptorFactory
+                 .fromResource(R.drawable.icon_lg_pin_restaurant)));
+	
+		
+		
+		/*mMap.addMarker(new MarkerOptions()
+		        .position(new LatLng(0, 0))
+		        .title("Something here...."))
+		        .setIcon(BitmapDescriptorFactory
+                 .fromResource(R.drawable.icon_lg_pin_restaurant));*/
+		
+		
+		
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+}

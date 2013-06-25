@@ -1,0 +1,42 @@
+package com.example.json_map;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.MapFragment;
+
+import android.os.Bundle;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+
+
+public class MapActivity extends Activity {
+	public final static String EXTRA_LAT = "lat";
+	public static final String EXTRA_LON = "lon";
+	public static final String EXTRA_NAME = "name";
+	
+	private GoogleMap mMap;
+   
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.activity_main);
+		double lat = getIntent().getDoubleExtra(EXTRA_LAT, 0.0);
+		double lon = getIntent().getDoubleExtra(EXTRA_LON, 0.0);
+		String name=getIntent().getStringExtra(EXTRA_NAME);
+		
+		LatLng city = new LatLng(lat, lon);
+		mMap = ((MapFragment)getFragmentManager().findFragmentById(R.id.map)).getMap();
+		
+		Marker cityMarker = mMap.addMarker(new MarkerOptions()
+        .position(city)
+        .title(name)
+        .snippet("EarthQuake sensitive Zone")
+       .icon(BitmapDescriptorFactory
+                 .fromResource(R.drawable.ic_launcher)));
+
+ }
+}

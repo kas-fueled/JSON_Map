@@ -1,0 +1,6 @@
+1372056407338	Rename resource 'map.xml'
+1372068935791	Rename field 'mRequestQueue'
+1372070817284	Encapsulate field 'url'
+1372075010580	Rename field 'list_items'
+1372140188181	Rename local variable 'earhquake_json_url'
+1372140231662	Rename local variable 'location_url'

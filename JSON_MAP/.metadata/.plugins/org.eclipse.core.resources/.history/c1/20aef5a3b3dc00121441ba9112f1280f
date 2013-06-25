@@ -1,0 +1,50 @@
+package com.example.json_map;
+import android.app.Activity;
+import android.os.Bundle;
+
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+
+public class MapActivity extends Activity {
+	public final static String EXTRA_LAT = "lat";
+	public static final String EXTRA_LON = "lon";
+	public static final String EXTRA_NAME = "name";
+	
+	private GoogleMap mMap;
+   
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.activity_map);
+		
+			
+			double lat = getIntent().getDoubleExtra(EXTRA_LAT, 0.0);
+			double lon = getIntent().getDoubleExtra(EXTRA_LON, 0.0);
+			String name=getIntent().getStringExtra(EXTRA_NAME);
+			
+			LatLng city = new LatLng(lat, lon);
+			//mMap = ((MapFragment)getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+			
+			MapFragment mapFragment = ((MapFragment)getFragmentManager().findFragmentById(R.id.map));
+			mMap = mapFragment.getMap();
+			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(city, 15));
+			mMap.addMarker(new MarkerOptions()
+	        .position(city)
+	        .title(name)
+	        .snippet("EarthQuake sensitive Zone")
+	        .icon(BitmapDescriptorFactory
+	                 .fromResource(R.drawable.ic_launcher)));
+			
+		
+		
+
+ }
+}

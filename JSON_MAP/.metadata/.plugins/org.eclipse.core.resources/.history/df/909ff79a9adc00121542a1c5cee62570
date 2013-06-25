@@ -1,0 +1,33 @@
+package com.example.json_map;
+
+import com.example.mapwithmarkers.R;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.MapFragment;
+
+import android.os.Bundle;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+
+@SuppressLint("NewApi")
+
+public class MapActivity extends Activity {
+	private GoogleMap mMap;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.activity_main);
+		mMap = ((MapFragment)getFragmentManager().findFragmentById(R.id.map)).getMap();
+		
+		Marker melbourne = mMap.addMarker(new MarkerOptions()
+        .position()
+        .title("melbourne......")
+        .snippet("Population: 4,137,400")
+       .icon(BitmapDescriptorFactory
+                 .fromResource(R.drawable.ic_launcher)));
+
+}

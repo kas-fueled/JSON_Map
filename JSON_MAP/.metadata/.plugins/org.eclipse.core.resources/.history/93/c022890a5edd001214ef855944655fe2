@@ -1,0 +1,159 @@
+package com.example.json_map;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+
+public class MainActivity extends Activity {
+	
+	private RequestQueue requestQueue;
+	private Adapter adapter;
+	private ListView dataList;
+	List<Details> listItems = new ArrayList<Details>();
+	double lati;
+	double longi;
+	String name;
+	String url;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		requestQueue = Volley.newRequestQueue(getApplicationContext());
+		adapter = new Adapter(this, requestQueue);
+		dataList = (ListView) findViewById(R.id.listView1);
+		dataList.setAdapter(adapter);
+
+		loadData();
+
+		dataList.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapter, View view,
+					int position, long arg) {
+
+				if (listItems == null) {
+					return;
+				}
+
+				Details details = listItems.get(position);
+				lati = details.getLatitude();
+				longi = details.getLongitude();
+				name = details.getName();
+				url=details.getUrl();
+
+				Intent intent = new Intent(MainActivity.this, MapActivity.class);
+
+				intent.putExtra(MapActivity.EXTRA_LAT, lati);
+				intent.putExtra(MapActivity.EXTRA_LON, longi);
+				intent.putExtra(MapActivity.EXTRA_NAME, name);
+				intent.putExtra(MapActivity.EXTRA_URL, url);
+
+				startActivity(intent);
+
+			}
+
+		});
+
+	}
+
+
+
+	public void loadData() {
+		try {
+			executeRequest();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void executeRequest() throws UnsupportedEncodingException {
+
+		String earhquakeJsonUrl = "http://earthquake.usgs.gov/earthquakes/feed/v0.1/summary/1.0_hour.geojson";
+
+		JsonObjectRequest myReq = new JsonObjectRequest(Method.GET, earhquakeJsonUrl, null,
+				createMyReqSuccessListener(),
+				(ErrorListener) createMyReqErrorListener());
+		requestQueue.add(myReq);
+	}
+
+	private Response.Listener<JSONObject> createMyReqSuccessListener() {
+		return new Response.Listener<JSONObject>() {
+			@Override
+			public void onResponse(JSONObject response) {
+				
+				listItems.clear();
+
+				try {
+					JSONArray dataArray = response.getJSONArray("features");
+					for (int t = 0; t < dataArray.length(); t++) {
+						Details data = new Details();
+
+						JSONObject feature = dataArray.getJSONObject(t);
+						String name = feature.getJSONObject("properties")
+								.getString("place");
+						
+						String locationUrl=feature.getJSONObject("properties")
+								.getString("url");
+
+						JSONArray jsonArrayCoordinates = feature.getJSONObject(
+								"geometry").getJSONArray("coordinates");
+
+						double lati = (Double) jsonArrayCoordinates.get(1);
+						double longi = (Double) jsonArrayCoordinates.get(0);
+
+						data.setName(name);
+						data.setLatitude(lati);
+						data.setLongitude(longi);
+						data.setUrl(locationUrl);
+
+						listItems.add(data);
+
+					}
+
+					adapter.setData(listItems);
+					adapter.notifyDataSetChanged();
+
+				} catch (JSONException e) {
+
+					e.printStackTrace();
+				}
+
+			}
+
+		};
+	}
+
+	private Response.ErrorListener createMyReqErrorListener() {
+		return new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+
+				error.getMessage();
+
+			}
+		};
+	}
+
+
+}
